@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 function Todo() {
-  const todoData = [
+  const [todo, setTodo] = useState([
     {
       id: "1",
       title: "청소하기",
@@ -17,7 +17,13 @@ function Todo() {
       title: "운동하기",
       completed: false,
     },
-  ];
+  ]);
+
+  const handleClick = (id) => {
+    let newTodoData = todo.filter((data) => data.id !== id);
+    console.log("newTodoData", newTodoData);
+    setTodo(newTodoData);
+  };
 
   return (
     <TodoContainer>
@@ -25,11 +31,17 @@ function Todo() {
         <TodoTitle>
           <h1>할 일 목록</h1>
         </TodoTitle>
-        {todoData.map((data) => (
+        {todo.map((data) => (
           <CheckBoxWaper key={data.id}>
             <CheckBox type="checkbox" defaultChecked={data.completed} />
             {data.title}
-            <CheckButton>X</CheckButton>
+            <CheckButton
+              onClick={() => {
+                handleClick(data.id);
+              }}
+            >
+              X
+            </CheckButton>
           </CheckBoxWaper>
         ))}
       </TodoBlock>
