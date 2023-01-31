@@ -3,11 +3,17 @@ import styled from "styled-components";
 function Todo() {
   const [todo, setTodo] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const [check, setCheck] = useState([]);
 
   const handleClick = (id) => {
     let newTodoData = todo.filter((data) => data.id !== id);
-    console.log("newTodoData", newTodoData);
     setTodo(newTodoData);
+  };
+
+  const handleChange = (e) => {
+    const { value } = e.target;
+    setInputValue(value);
+    e.preventDefault();
   };
 
   const handleSubmit = (e) => {
@@ -18,17 +24,33 @@ function Todo() {
       completed: false,
     };
     setTodo([...todo, newTodo]);
+    setInputValue("");
   };
 
+  const handleCompleChange = (id, index) => {
+    let newTodoData = todo.map((data) => {
+      if (data.id === id) {
+        data.completed = !data.completed;
+      }
+      return data;
+    });
+    setTodo(newTodoData);
+    setCheck({ ...check, [id]: todo[index].completed });
+    console.log(check);
+  };
   return (
     <TodoContainer>
       <TodoBlock>
         <TodoTitle>
           <h1>할 일 목록</h1>
         </TodoTitle>
-        {todo.map((data) => (
-          <CheckBoxWaper key={data.id}>
-            <CheckBox type="checkbox" defaultChecked={data.completed} />
+        {todo.map((data, index) => (
+          <CheckBoxWaper check={check[data.id]} key={data.id}>
+            <CheckBox
+              type="checkbox"
+              onChange={() => handleCompleChange(data.id, index)}
+              defaultChecked={false}
+            />
             {data.title}
             <DeleteButton
               onClick={() => {
@@ -42,13 +64,11 @@ function Todo() {
         <TodoInputBox onSubmit={handleSubmit}>
           <TodoInput
             type="text"
-            name="value"
+            value={inputValue}
             placeholder="해야 할 일을 입력하세요."
-            onChange={(e) => {
-              setInputValue(e.target.value);
-            }}
+            onChange={handleChange}
           />
-          <TodoSubmit type="submit" value="입력" />
+          <TodoSubmit type="submit" value="입력" onClick={handleSubmit} />
         </TodoInputBox>
       </TodoBlock>
     </TodoContainer>
@@ -70,11 +90,13 @@ const TodoBlock = styled.div`
 `;
 
 const TodoTitle = styled.div``;
+
 const CheckBoxWaper = styled.div`
   padding: 10px;
   border-bottom: 1px #ccc dotted;
-  text-decoration: none;
+  text-decoration: ${(props) => (props.check ? "line-through" : "none")};
 `;
+
 const CheckBox = styled.input``;
 const DeleteButton = styled.button`
   color: #fff;
