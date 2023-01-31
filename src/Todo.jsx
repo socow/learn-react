@@ -1,28 +1,23 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 function Todo() {
-  const [todo, setTodo] = useState([
-    {
-      id: "1",
-      title: "청소하기",
-      completed: true,
-    },
-    {
-      id: "2",
-      title: "공부하기",
-      completed: true,
-    },
-    {
-      id: "3",
-      title: "운동하기",
-      completed: false,
-    },
-  ]);
+  const [todo, setTodo] = useState([]);
+  const [inputValue, setInputValue] = useState("");
 
   const handleClick = (id) => {
     let newTodoData = todo.filter((data) => data.id !== id);
     console.log("newTodoData", newTodoData);
     setTodo(newTodoData);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let newTodo = {
+      id: Date.now(),
+      title: inputValue,
+      completed: false,
+    };
+    setTodo([...todo, newTodo]);
   };
 
   return (
@@ -35,15 +30,26 @@ function Todo() {
           <CheckBoxWaper key={data.id}>
             <CheckBox type="checkbox" defaultChecked={data.completed} />
             {data.title}
-            <CheckButton
+            <DeleteButton
               onClick={() => {
                 handleClick(data.id);
               }}
             >
               X
-            </CheckButton>
+            </DeleteButton>
           </CheckBoxWaper>
         ))}
+        <TodoInputBox onSubmit={handleSubmit}>
+          <TodoInput
+            type="text"
+            name="value"
+            placeholder="해야 할 일을 입력하세요."
+            onChange={(e) => {
+              setInputValue(e.target.value);
+            }}
+          />
+          <TodoSubmit type="submit" value="입력" />
+        </TodoInputBox>
       </TodoBlock>
     </TodoContainer>
   );
@@ -70,11 +76,21 @@ const CheckBoxWaper = styled.div`
   text-decoration: none;
 `;
 const CheckBox = styled.input``;
-const CheckButton = styled.button`
+const DeleteButton = styled.button`
   color: #fff;
   border: none;
   padding: 5px 9px;
   border-radius: 50%;
   cursor: pointer;
   float: right;
+`;
+const TodoInputBox = styled.form`
+  display: flex;
+`;
+const TodoInput = styled.input`
+  flex: 10;
+  padding: 5px;
+`;
+const TodoSubmit = styled.input`
+  flex: 1;
 `;
